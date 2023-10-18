@@ -2,12 +2,17 @@ package com.example.payeaseapp;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DBHandler extends SQLiteOpenHelper {
+import java.util.ArrayList;
 
+public class DBHandler extends SQLiteOpenHelper {
+    public static final String SHARED_PREFS = "login_prefs";
+    public static final String USERNAME_KEY = "username_key";
+    public static final String PASSWORD_KEY = "password_key";
     private static final String DB_NAME = "payEaseDB";
     private static final int DB_VERSION = 1;
     private static final String TABLE_NAME = "payEaseSignUp";
@@ -201,6 +206,32 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.close();
         return loggedInUsername;
+    }
+
+    public ArrayList<String> getBankDetails(Context context) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Get the current username from SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        String query = "SELECT " + BANK_ACC_NO + ", " + BANK_NAME + ", " + IFSC_CODE + ", " + BALANCE +
+                " FROM " + BANK_Table +
+                " WHERE " + BANK_ACC_NAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        ArrayList<String> userDetails = new ArrayList<>();
+
+        if (cursor != null && cursor.moveToFirst()) {
+            userDetails.add(cursor.getString(0)); // Bank Account Number
+            userDetails.add(cursor.getString(1)); // Bank Name
+            userDetails.add(cursor.getString(2)); // IFSC Code
+            userDetails.add(cursor.getString(3)); // Balance
+
+            cursor.close();
+        }
+
+        return userDetails;
     }
 
     @Override

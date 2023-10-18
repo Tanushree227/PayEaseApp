@@ -77,24 +77,24 @@ public class ToPhoneActivity extends AppCompatActivity {
                 String username = cursor.getString(usernameIndex);
                 String result = dbHelper.checkTransaction(user_str, amountToSend, username);
 
-                if (result != null) {
-                    // Handle the result (e.g., show the updated balance)
+                if (result == null) {
+                    // Transaction failed (e.g., insufficient balance)
+                    Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
+                    i2.putExtra("AmountPaid", amountToSend);
+                    i2.putExtra("Result", "Insufficient Balance");
+                    startActivity(i2);
+                } else {
+                    // Transaction successful
                     Intent i1 = new Intent(ToPhoneActivity.this, SuccessActivity.class);
                     i1.putExtra("Username", username);
                     i1.putExtra("AmountPaid", amountToSend);
                     i1.putExtra("UpdatedBalance", result);
                     startActivity(i1);
                 }
-                else
-                {
-                    Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
-                    i2.putExtra("AmountPaid", amountToSend);
-                    i2.putExtra("Result", "Insufficient Balance");
-                    startActivity(i2);
-                }
 
                 cursor.close();
-            } else {
+            }
+            else {
                 Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
                 i2.putExtra("AmountPaid", amountToSend);
                 i2.putExtra("Result", phoneNumber);
@@ -108,3 +108,5 @@ public class ToPhoneActivity extends AppCompatActivity {
     }
 
 }
+
+

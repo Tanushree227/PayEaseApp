@@ -13,6 +13,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String SHARED_PREFS = "login_prefs";
     public static final String USERNAME_KEY = "username_key";
     public static final String PASSWORD_KEY = "password_key";
+    private static final String WALLET_TABLE = "Wallet";
     private static final String DB_NAME = "payEaseDB";
     private static final int DB_VERSION = 1;
     private static final String TABLE_NAME = "payEaseSignUp";
@@ -60,12 +61,14 @@ public class DBHandler extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + BANK_ACC_NAME + ") REFERENCES " + TABLE_NAME + "(" + USERNAME + "))";
         db.execSQL(query1);
 
-        String query4 = "CREATE TABLE Wallet" + " ("
+        String walletTableQuery = "CREATE TABLE " + WALLET_TABLE + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "USERNAME TEXT,"
-                + BALANCE + " TEXT,"
-                + "FOREIGN KEY(USERNAME) REFERENCES " + TABLE_NAME + "(" + USERNAME + "))";
-        db.execSQL(query4);
+                + USERNAME + " TEXT UNIQUE, "
+                + BALANCE + " TEXT)";
+        db.execSQL(walletTableQuery);
+        String initializeWalletBalancesQuery = "INSERT INTO " + WALLET_TABLE + " (" + USERNAME + ", " + BALANCE + ") " +
+                "SELECT " + BANK_ACC_NAME + ", " + BALANCE + " FROM " + BANK_Table;
+        db.execSQL(initializeWalletBalancesQuery);
 
         String query3 = "CREATE TABLE " + Transaction_Table + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -290,6 +293,99 @@ public class DBHandler extends SQLiteOpenHelper {
         String whereCLause2 = BANK_ACC_NAME + " = ?";
         String[] whereArgs2 = {olduser};
         db.update(BANK_Table, values2, whereCLause2, whereArgs2);
+    }
+
+    public boolean transferToDigitalWallet(double amountToAdd, Context context) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Fetch the logged-in username from SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        // Fetch the current balance of the user
+        double currentBalance = getBalanceForUser(username);
+
+        if (currentBalance >= amountToAdd) {
+            // Deduct the balance from the user's account
+            double newBalance = currentBalance - amountToAdd;
+            updateBalancesForUser(username, newBalance);
+
+            // Add the amount to the digital wallet
+            double currentDigitalWalletBalance = getDigitalWalletBalance();
+            double newDigitalWalletBalance = currentDigitalWalletBalance + amountToAdd;
+            updateDigitalWalletBalance(newDigitalWalletBalance);
+
+            return true; // Successful transaction
+        } else {
+            return false; // Insufficient balance
+        }
+    }
+
+
+    public double getBalanceForUser(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double balance = 0.0;
+
+        String[] columns = {BALANCE};
+        String selection = USERNAME + " = ?";
+        String[] selectionArgs = {username};
+
+        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            balance = Double.parseDouble(cursor.getString(0));
+            cursor.close();
+        }
+
+        return balance;
+    }
+
+    public void updateBalancesForUser(String username, double newBalance) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(BALANCE, newBalance);
+
+        // Update the balance in the BANK_Table
+        String bankWhereClause = BANK_ACC_NAME + " = ?";
+        String[] bankWhereArgs = {username};
+        db.update(BANK_Table, values, bankWhereClause, bankWhereArgs);
+
+        // Update the balance in the Wallet table
+        String walletWhereClause = USERNAME + " = ?";
+        String[] walletWhereArgs = {username};
+        db.update(WALLET_TABLE, values, walletWhereClause, walletWhereArgs);
+    }
+
+    public double getDigitalWalletBalance() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double walletBalance = 0.0;
+
+        String[] columns = {BALANCE};
+        // You'll need to adapt this query based on your specific database schema.
+        // Assuming the digital wallet balance is stored in a separate table.
+        Cursor cursor = db.query(WALLET_TABLE, columns, null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            walletBalance = Double.parseDouble(cursor.getString(0));
+            cursor.close();
+        }
+
+        return walletBalance;
+    }
+
+    public void updateDigitalWalletBalance(double newWalletBalance) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(BALANCE, newWalletBalance);
+
+        // You'll need to adapt this update based on your specific database schema.
+        // Assuming the digital wallet balance is stored in a separate table.
+        String whereClause = null; // Set the appropriate WHERE clause
+        String[] whereArgs = null; // Set the appropriate WHERE arguments
+
+        db.update(WALLET_TABLE, values, whereClause, whereArgs);
     }
 
     @Override

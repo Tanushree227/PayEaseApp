@@ -46,7 +46,7 @@ public class ProfilePageActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         user_str = sharedPreferences.getString(USERNAME_KEY, "");
-        email_str = sharedPreferences.getString(EMAIL_KEY, "");
+        email_str = dbHandler.getEmail(this);
         phone = sharedPreferences.getString(PHONE_KEY, "");
 
         userText.setText("Username: "+user_str);
@@ -84,6 +84,7 @@ public class ProfilePageActivity extends AppCompatActivity {
                 if(position == 0)
                 {
                     Intent i1 = new Intent(ProfilePageActivity.this, EditProfileActivity.class);
+                    i1.putExtra("username", user_str);
                     startActivity(i1);
                 }
                 if(position == 2)

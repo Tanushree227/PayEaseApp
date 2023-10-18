@@ -78,6 +78,26 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL(query3);
 
     }
+    public boolean isUserValid(String username, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] columns = {ID_COL};
+        String selection = USERNAME + " = ? AND " + PASSWORD + " = ?";
+        String[] selectionArgs = {username, password};
+
+        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+
+        boolean isValid = cursor != null && cursor.moveToFirst();
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        db.close();
+
+        return isValid;
+    }
+
     public void addNewUser(String username1, String email1, String phone1, String password1, String c_password1) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -232,6 +252,44 @@ public class DBHandler extends SQLiteOpenHelper {
         }
 
         return userDetails;
+    }
+
+    public String getEmail(Context context)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        String query = "SELECT " + EMAIL + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String email = (cursor.getString(0));
+            cursor.close();
+            return  email;
+        }
+        return "";
+    }
+    public void updateUserProfile(String olduser, String newUsername, String newPassword, String confirmNewPassword, String newUPIPin) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USERNAME, newUsername);
+        values.put(PASSWORD, newPassword);
+        values.put(C_PASSWORD, confirmNewPassword);
+
+        String whereClause = USERNAME + " = ?";
+        String[] whereArgs = {olduser};
+
+        db.update(TABLE_NAME, values, whereClause, whereArgs);
+
+        // You can handle the update for the BANK_Table in a similar way if needed
+        ContentValues values2 = new ContentValues();
+        values2.put(UPI_PIN, newUPIPin);
+        values2.put(BANK_ACC_NAME, newUsername);
+        String whereCLause2 = BANK_ACC_NAME + " = ?";
+        String[] whereArgs2 = {olduser};
+        db.update(BANK_Table, values2, whereCLause2, whereArgs2);
     }
 
     @Override

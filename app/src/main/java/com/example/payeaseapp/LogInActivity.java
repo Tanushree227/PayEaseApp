@@ -42,21 +42,26 @@ public class LogInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String unameText = uname.getText().toString();
                 String passText = pass.getText().toString();
-                if(unameText.isEmpty() || passText.isEmpty())
-                {
-                    Toast.makeText(LogInActivity.this, "Please enter all the fields.", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    sharedPreferences.edit().putString(USERNAME_KEY, unameText).apply();
-                    sharedPreferences.edit().putString(PASSWORD_KEY, passText).apply();
 
-                    Intent i = new Intent(LogInActivity.this, HomeActivity.class);
-                    finish();
-                    startActivity(i);
+                if (unameText.isEmpty() || passText.isEmpty()) {
+                    Toast.makeText(LogInActivity.this, "Please enter all the fields.", Toast.LENGTH_SHORT).show();
+                } else {
+                    boolean isValidUser = dbHandler.isUserValid(unameText, passText);
+
+                    if (isValidUser) {
+                        sharedPreferences.edit().putString(USERNAME_KEY, unameText).apply();
+                        sharedPreferences.edit().putString(PASSWORD_KEY, passText).apply();
+
+                        Intent i = new Intent(LogInActivity.this, HomeActivity.class);
+                        finish();
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(LogInActivity.this, "Invalid username or password.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
+
 
         ImageButton backbtn = (ImageButton) findViewById(R.id.backBtn);
 

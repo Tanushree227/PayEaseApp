@@ -2,6 +2,7 @@ package com.example.payeaseapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +41,9 @@ public class ToPhoneActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                Intent i = new Intent(ToPhoneActivity.this, HomeActivity.class);
+                startActivity(i);
+                finish();
             }
         });
 
@@ -72,20 +75,30 @@ public class ToPhoneActivity extends AppCompatActivity {
             int usernameIndex = cursor.getColumnIndex("userName");
             if (cursor != null && cursor.moveToFirst()) {
                 String username = cursor.getString(usernameIndex);
-                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
-
-                // Call the checkTransaction method to perform the transaction
                 String result = dbHelper.checkTransaction(user_str, amountToSend, username);
 
                 if (result != null) {
                     // Handle the result (e.g., show the updated balance)
-                    Log.d("TransactionResult", "Updated Balance: " + result);
-                    Toast.makeText(this, "Transaction successful. Updated Balance: " + result, Toast.LENGTH_SHORT).show();
+                    Intent i1 = new Intent(ToPhoneActivity.this, SuccessActivity.class);
+                    i1.putExtra("Username", username);
+                    i1.putExtra("AmountPaid", amountToSend);
+                    i1.putExtra("UpdatedBalance", result);
+                    startActivity(i1);
+                }
+                else
+                {
+                    Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
+                    i2.putExtra("AmountPaid", amountToSend);
+                    i2.putExtra("Result", "Insufficient Balance");
+                    startActivity(i2);
                 }
 
                 cursor.close();
             } else {
-                Toast.makeText(this, "No user found for the entered phone number", Toast.LENGTH_SHORT).show();
+                Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
+                i2.putExtra("AmountPaid", amountToSend);
+                i2.putExtra("Result", phoneNumber);
+                startActivity(i2);
             }
 
             db.close();

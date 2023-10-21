@@ -3,6 +3,7 @@ package com.example.payeaseapp;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private EditText newNameEditText, newPasswordEditText, confirmNewPasswordEditText, newUPIPinEditText, confirmNewUPIPinEditText;
+    private EditText newNameEditText, newPasswordEditText, confirmNewPasswordEditText, newUPIPinEditText, confirmNewUPIPinEditText, emailE;
 
     private Button updatebtn;
     private DBHandler dbHandler;
@@ -33,7 +34,6 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent i = getIntent();
         String old_username = i.getStringExtra("username");
 
-        newNameEditText = findViewById(R.id.uEName);
         newPasswordEditText = findViewById(R.id.changePass);
         confirmNewPasswordEditText = findViewById(R.id.changeCPass);
         newUPIPinEditText = findViewById(R.id.changePin);
@@ -51,7 +51,6 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     public void onUpdateProfileClick(String old_user) {
-        String newUsername = newNameEditText.getText().toString().trim();
         String newPassword = newPasswordEditText.getText().toString().trim();
         String confirmNewPassword = confirmNewPasswordEditText.getText().toString().trim();
         String newUPIPin = newUPIPinEditText.getText().toString().trim();
@@ -67,7 +66,7 @@ public class EditProfileActivity extends AppCompatActivity {
             confirmNewUPIPinEditText.setError("PIN does not Match.");
             confirmNewUPIPinEditText.setText("");
         } else {
-            dbHandler.updateUserProfile(old_user, newUsername, newPassword, confirmNewPassword, newUPIPin);
+            dbHandler.updateUserProfile(old_user, newPassword, confirmNewPassword, newUPIPin);
             Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show();
             Intent i1 = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
             finish();

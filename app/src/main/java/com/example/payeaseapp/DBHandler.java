@@ -273,119 +273,21 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return "";
     }
-    public void updateUserProfile(String olduser, String newUsername, String newPassword, String confirmNewPassword, String newUPIPin) {
+    public void updateUserProfile(String olduser, String newPassword, String confirmNewPassword, String newUPIPin) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(USERNAME, newUsername);
         values.put(PASSWORD, newPassword);
         values.put(C_PASSWORD, confirmNewPassword);
-
         String whereClause = USERNAME + " = ?";
         String[] whereArgs = {olduser};
-
         db.update(TABLE_NAME, values, whereClause, whereArgs);
 
-        // You can handle the update for the BANK_Table in a similar way if needed
         ContentValues values2 = new ContentValues();
         values2.put(UPI_PIN, newUPIPin);
-        values2.put(BANK_ACC_NAME, newUsername);
         String whereCLause2 = BANK_ACC_NAME + " = ?";
         String[] whereArgs2 = {olduser};
         db.update(BANK_Table, values2, whereCLause2, whereArgs2);
-    }
-
-    public boolean transferToDigitalWallet(double amountToAdd, Context context) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // Fetch the logged-in username from SharedPreferences
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString(USERNAME_KEY, "");
-
-        // Fetch the current balance of the user
-        double currentBalance = getBalanceForUser(username);
-
-        if (currentBalance >= amountToAdd) {
-            // Deduct the balance from the user's account
-            double newBalance = currentBalance - amountToAdd;
-            updateBalancesForUser(username, newBalance);
-
-            // Add the amount to the digital wallet
-            double currentDigitalWalletBalance = getDigitalWalletBalance();
-            double newDigitalWalletBalance = currentDigitalWalletBalance + amountToAdd;
-            updateDigitalWalletBalance(newDigitalWalletBalance);
-
-            return true; // Successful transaction
-        } else {
-            return false; // Insufficient balance
-        }
-    }
-
-
-    public double getBalanceForUser(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        double balance = 0.0;
-
-        String[] columns = {BALANCE};
-        String selection = USERNAME + " = ?";
-        String[] selectionArgs = {username};
-
-        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            balance = Double.parseDouble(cursor.getString(0));
-            cursor.close();
-        }
-
-        return balance;
-    }
-
-    public void updateBalancesForUser(String username, double newBalance) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(BALANCE, newBalance);
-
-        // Update the balance in the BANK_Table
-        String bankWhereClause = BANK_ACC_NAME + " = ?";
-        String[] bankWhereArgs = {username};
-        db.update(BANK_Table, values, bankWhereClause, bankWhereArgs);
-
-        // Update the balance in the Wallet table
-        String walletWhereClause = USERNAME + " = ?";
-        String[] walletWhereArgs = {username};
-        db.update(WALLET_TABLE, values, walletWhereClause, walletWhereArgs);
-    }
-
-    public double getDigitalWalletBalance() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        double walletBalance = 0.0;
-
-        String[] columns = {BALANCE};
-        // You'll need to adapt this query based on your specific database schema.
-        // Assuming the digital wallet balance is stored in a separate table.
-        Cursor cursor = db.query(WALLET_TABLE, columns, null, null, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            walletBalance = Double.parseDouble(cursor.getString(0));
-            cursor.close();
-        }
-
-        return walletBalance;
-    }
-
-    public void updateDigitalWalletBalance(double newWalletBalance) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(BALANCE, newWalletBalance);
-
-        // You'll need to adapt this update based on your specific database schema.
-        // Assuming the digital wallet balance is stored in a separate table.
-        String whereClause = null; // Set the appropriate WHERE clause
-        String[] whereArgs = null; // Set the appropriate WHERE arguments
-
-        db.update(WALLET_TABLE, values, whereClause, whereArgs);
     }
 
     @Override

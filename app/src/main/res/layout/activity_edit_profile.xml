@@ -25,26 +25,12 @@
         android:gravity="center"
         android:layout_margin="25dp"/>
 
-    <EditText
-        android:id="@+id/uEName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editTitle"
-        android:hint="Enter New Name"
-        android:inputType="text"
-        android:textColorHint="@color/white"
-        android:textColor="@color/white"
-        android:layout_margin="10dp"
-        android:padding="20dp"
-        android:background="#30ffffff"
-        android:drawableLeft="@drawable/baseline_person_24"
-        android:drawablePadding="20dp" />
 
     <EditText
         android:id="@+id/changePass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/uEName"
+        android:layout_below="@id/editTitle"
         android:hint="Change Password"
         android:inputType="textPassword"
         android:textColorHint="@color/white"

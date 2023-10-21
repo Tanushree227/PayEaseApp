@@ -87,6 +87,8 @@ public class ProfilePageActivity extends AppCompatActivity {
                     i1.putExtra("username", user_str);
                     startActivity(i1);
                 }
+                if(position == 1)
+                {}
                 if(position == 2)
                 {
                     Intent i2 = new Intent(ProfilePageActivity.this, MainActivity.class);

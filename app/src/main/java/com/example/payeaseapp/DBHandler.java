@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class DBHandler extends SQLiteOpenHelper {
@@ -33,6 +35,10 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String BALANCE = "BALANCE";
     private static final String Deduct = "deduct";
     private static final String USerID = "receiver";
+    private static final String CONTACT_TABLE = "PayEaseContact";
+    private static final String CONTACT_NAME = "ContactAccName";
+    private static final String CONTACT_BANK_ACC_NO = "ContactBankAccNO";
+    private static final String CONTACT_BALANCE = "ContactBALANCE";
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         SQLiteDatabase db = this.getWritableDatabase();
@@ -48,8 +54,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 + PASSWORD + " TEXT UNIQUE, "
                 + C_PASSWORD + " TEXT UNIQUE)";
         db.execSQL(query);
-
-
+        
         String query1 = "CREATE TABLE " + BANK_Table + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + BANK_ACC_NO + " TEXT,"
@@ -60,6 +65,13 @@ public class DBHandler extends SQLiteOpenHelper {
                 + BALANCE + " TEXT,"
                 + "FOREIGN KEY(" + BANK_ACC_NAME + ") REFERENCES " + TABLE_NAME + "(" + USERNAME + "))";
         db.execSQL(query1);
+
+        String query2 = "CREATE TABLE " + CONTACT_TABLE + "("
+                + ID_COL + "INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + CONTACT_NAME + "TEXT, "
+                + CONTACT_BANK_ACC_NO + "TEXT UNIQUE, "
+                + CONTACT_BALANCE + "TEXT )";
+        db.execSQL(query2);
 
         String walletTableQuery = "CREATE TABLE " + WALLET_TABLE + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -163,6 +175,35 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(BALANCE, balance);
 
         db.insert(BANK_Table, null, values);
+    }
+
+    public void insertContactData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CONTACT_NAME ,"Megha");
+        values.put(CONTACT_BANK_ACC_NO, "498765032149");
+        values.put(CONTACT_BALANCE, "4900");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Divya");
+        values.put(CONTACT_BANK_ACC_NO, "508765032150");
+        values.put(CONTACT_BALANCE, "5000");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Nireeksha");
+        values.put(CONTACT_BANK_ACC_NO, "518765032151");
+        values.put(CONTACT_BALANCE, "5100");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Tanushree");
+        values.put(CONTACT_BANK_ACC_NO, "778765032177");
+        values.put(CONTACT_BALANCE, "7700");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Jyothika");
+        values.put(CONTACT_BANK_ACC_NO, "838765032183");
+        values.put(CONTACT_BALANCE, "8300");
+        db.insert(CONTACT_TABLE, null, values);
     }
 
     public String checkTransaction(String loggedInUsername, String Damt, String userIdName) {
@@ -270,6 +311,23 @@ public class DBHandler extends SQLiteOpenHelper {
             String email = (cursor.getString(0));
             cursor.close();
             return  email;
+        }
+        return "";
+    }
+
+    public String getBalance(Context context)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        String query = "SELECT " + BALANCE + " FROM " + BANK_Table + " WHERE " + BANK_ACC_NAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String balance = (cursor.getString(0));
+            cursor.close();
+            return  balance;
         }
         return "";
     }

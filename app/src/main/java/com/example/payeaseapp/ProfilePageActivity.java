@@ -22,11 +22,10 @@ import java.util.List;
 public class ProfilePageActivity extends AppCompatActivity {
     TextView userText, emailText, phoneText, bankAcc, bankName, ifscC, balance;
     DBHandler dbHandler;
-    SharedPreferences sharedPreferences, preferences;
-    String user_str, email_str, phone, bankAcc1, bankName1, ifscC1, balance1;
+    SharedPreferences sharedPreferences;
+    String user_str, email_str, phone;
     public static final String SHARED_PREFS = "login_prefs";
     public static final String USERNAME_KEY = "username_key";
-    public static final String EMAIL_KEY = "email_key";
     public static final String PHONE_KEY = "phone_key";
 
     @SuppressLint("MissingInflatedId")

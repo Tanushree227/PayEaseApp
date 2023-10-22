@@ -25,4 +25,37 @@
         android:gravity="center"
         android:layout_margin="20dp"/>
 
+    <TextView
+        android:id="@+id/AvailBalanceText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Available Balance"
+        android:layout_below="@+id/balanceHistoryText"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_margin="20dp"/>
+
+    <TextView
+        android:id="@+id/balance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/AvailBalanceText"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_margin="20dp"/>
+
+    <TextView
+        android:id="@+id/TransactioHistoryText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Transaction History"
+        android:layout_below="@+id/balance"
+        android:textSize="25dp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_margin="20dp"/>
+
 </RelativeLayout>

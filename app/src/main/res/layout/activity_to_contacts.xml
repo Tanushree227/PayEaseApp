@@ -14,31 +14,80 @@
         android:layout_height="40dp"
         android:background="@drawable/back_button" />
 
-    <EditText
+    <TextView
         android:id="@+id/tocontactnumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/backContact"
-        android:hint="Enter Name or Mobile Number"
-        android:textColorHint="@color/white"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:text="Send Money to Contacts"
+        android:textStyle="bold"
         android:textColor="@color/white"
-        android:layout_margin="10dp"
-        android:padding="20dp"
-        android:background="#30ffffff"
-        android:drawableLeft="@drawable/baseline_person_24"
-        android:drawablePadding="20dp"/>
+        android:layout_margin="20dp" />
 
     <TextView
         android:id="@+id/recentText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tocontactnumber"
-        android:layout_marginTop="20dp"
-        android:text="Recents"
+        android:layout_marginTop="10dp"
+        android:text="Contacts"
         android:textColor="@color/white"
         android:paddingStart="15dp"
         android:textSize="20dp"
         android:textStyle="bold"/>
 
+    <ListView
+        android:id="@+id/cList"
+        android:background="@color/white"
+        android:layout_margin="15dp"
+        android:listSelector="#edede9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recentText" />
+
+    <EditText
+        android:id="@+id/amtSendC"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cList"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="#30ffffff"
+        android:hint="Enter Amount to Send"
+        android:padding="20dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white" />
+    <EditText
+        android:id="@+id/upi2C"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amtSendC"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="#30ffffff"
+        android:hint="Enter UPI Pin"
+        android:padding="20dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sendbtnC"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/upi2C"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="#f1faee"
+        android:text="Send"
+        android:textColor="#030450"
+        android:textSize="25sp" />
 
 </RelativeLayout>

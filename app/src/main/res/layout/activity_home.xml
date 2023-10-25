@@ -188,6 +188,13 @@
             android:layout_height="75dp"
             android:background="@drawable/dth_recharge"
             android:layout_marginStart="50dp"/>
+
+        <ImageButton
+            android:id="@+id/mobileRbtn"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:background="@drawable/mobile_recharge"
+            android:layout_marginStart="50dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -214,6 +221,17 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="40dp"
             android:text="Dth \n Recharge"
+            android:textAlignment="center"
+            android:textColor="#030450"
+            android:textSize="18dp"/>
+
+        <TextView
+            android:id="@+id/mobiletext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="40dp"
+            android:text="Mobile \n Recharge"
             android:textAlignment="center"
             android:textColor="#030450"
             android:textSize="18dp"/>

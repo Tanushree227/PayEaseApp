@@ -298,6 +298,29 @@ public class DBHandler extends SQLiteOpenHelper {
         return userDetails;
     }
 
+    public ArrayList<String> getTransactionHistory(Context context) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        String query = "SELECT " +  USerID + ", " + Deduct +
+                " FROM " + Transaction_Table +
+                " WHERE " + USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        ArrayList<String> transactionDetails = new ArrayList<>();
+
+        if (cursor != null && cursor.moveToFirst()) {
+            transactionDetails.add(cursor.getString(0));
+            transactionDetails.add(cursor.getString(1));
+
+            cursor.close();
+        }
+
+        return transactionDetails;
+    }
+
     public String getEmail(Context context)
     {
         SQLiteDatabase db = this.getReadableDatabase();

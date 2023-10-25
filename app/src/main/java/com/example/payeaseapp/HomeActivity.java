@@ -2,6 +2,7 @@ package com.example.payeaseapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ public class HomeActivity extends AppCompatActivity {
     private DBHandler dbHandler; // Declare a reference to the DBHandler
 
     @Override
+    @SuppressLint("MissingInflatedId")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
@@ -25,6 +27,9 @@ public class HomeActivity extends AppCompatActivity {
         ImageButton menu = (ImageButton) findViewById(R.id.menu);
         ImageView digitalwallet = (ImageButton) findViewById(R.id.digitalwallet);
         ImageView balance_history = (ImageView) findViewById(R.id.balance);
+        ImageView electricityRbtn = (ImageView) findViewById(R.id.electricityRbtn);
+        ImageView dthRbtn = (ImageView) findViewById(R.id.dthRbtn);
+        ImageView mobileRbtn = (ImageView) findViewById(R.id.mobileRbtn);
 
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +77,28 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i5 = new Intent(HomeActivity.this, Balance_History_Activity.class);
                 startActivity(i5);
+            }
+        });
+        electricityRbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i6 = new Intent(HomeActivity.this, ElectricityRecharge.class);
+                startActivity(i6);
+            }
+        });
+        dthRbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i7 = new Intent(HomeActivity.this, DthRecharge.class);
+                startActivity(i7);
+            }
+        });
+
+        mobileRbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i8 = new Intent(HomeActivity.this, MobileRechargeActivity.class);
+                startActivity(i8);
             }
         });
     }

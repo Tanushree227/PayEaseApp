@@ -6,20 +6,14 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     public static final String SHARED_PREFS = "login_prefs";
     public static final String USERNAME_KEY = "username_key";
-    public static final String PASSWORD_KEY = "password_key";
-    private static final String WALLET_TABLE = "Wallet";
     private static final String DB_NAME = "payEaseDB";
     private static final int DB_VERSION = 1;
     private static final String TABLE_NAME = "payEaseSignUp";
@@ -40,10 +34,6 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String Deduct = "deduct";
     private static final String DateTime = "timedate";
     private static final String USerID = "receiver";
-    private static final String CONTACT_TABLE = "PayEaseContact";
-    private static final String CONTACT_NAME = "ContactAccName";
-    private static final String CONTACT_PHONE_ACC_NO = "ContactPhoneAccNO";
-    private static final String CONTACT_BALANCE = "ContactBALANCE";
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         SQLiteDatabase db = this.getWritableDatabase();
@@ -71,22 +61,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + BANK_ACC_NAME + ") REFERENCES " + TABLE_NAME + "(" + USERNAME + "))";
         db.execSQL(query1);
 
-        String query2 = "CREATE TABLE " + CONTACT_TABLE + "("
-                + ID_COL + " INTEGER PRIMARY KEY, "
-                + CONTACT_NAME + " TEXT, "
-                + CONTACT_PHONE_ACC_NO + " TEXT UNIQUE, "
-                + CONTACT_BALANCE + " TEXT )";
-        db.execSQL(query2);
-
-        String walletTableQuery = "CREATE TABLE " + WALLET_TABLE + " ("
-                + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + USERNAME + " TEXT UNIQUE, "
-                + BALANCE + " TEXT)";
-        db.execSQL(walletTableQuery);
-        String initializeWalletBalancesQuery = "INSERT INTO " + WALLET_TABLE + " (" + USERNAME + ", " + BALANCE + ") " +
-                "SELECT " + BANK_ACC_NAME + ", " + BALANCE + " FROM " + BANK_Table;
-        db.execSQL(initializeWalletBalancesQuery);
-
         String query3 = "CREATE TABLE " + Transaction_Table + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + USERNAME + " TEXT,"
@@ -97,33 +71,6 @@ public class DBHandler extends SQLiteOpenHelper {
                 "FOREIGN KEY(" + USERNAME + ") REFERENCES " + TABLE_NAME + "(" + USERNAME + "), " +
                 "FOREIGN KEY(" + BALANCE + ") REFERENCES " + BANK_Table + "(" + BALANCE + "))";
         db.execSQL(query3);
-
-        ContentValues values = new ContentValues();
-        values.put(CONTACT_NAME ,"Megha");
-        values.put(CONTACT_PHONE_ACC_NO, "8765032149");
-        values.put(CONTACT_BALANCE, "4900");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Divya");
-        values.put(CONTACT_PHONE_ACC_NO, "8765032150");
-        values.put(CONTACT_BALANCE, "5000");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Nireeksha");
-        values.put(CONTACT_PHONE_ACC_NO, "8765032151");
-        values.put(CONTACT_BALANCE, "5100");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Tanushree");
-        values.put(CONTACT_PHONE_ACC_NO, "8765032177");
-        values.put(CONTACT_BALANCE, "7700");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Jyothika");
-        values.put(CONTACT_PHONE_ACC_NO, "8765032183");
-        values.put(CONTACT_BALANCE, "8300");
-        db.insert(CONTACT_TABLE, null, values);
-
     }
     public boolean isUserValid(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -426,29 +373,6 @@ public class DBHandler extends SQLiteOpenHelper {
     public void deleteUserByUsername(String username) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME, USERNAME + "=?", new String[]{username});
-    }
-
-    public List<Contacts> getContacts() {
-        List<Contacts> contactList = new ArrayList<>();
-        SQLiteDatabase db = null;
-        db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT "+ CONTACT_NAME+ ", " +CONTACT_PHONE_ACC_NO+" FROM " + CONTACT_TABLE, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            int nameIndex = cursor.getColumnIndex(CONTACT_NAME);
-            int phoneIndex = cursor.getColumnIndex(CONTACT_PHONE_ACC_NO);
-            int balanceIndex = cursor.getColumnIndex(CONTACT_BALANCE);
-            do {
-                String name = cursor.getString(nameIndex);
-                String phoneNumber = cursor.getString(phoneIndex);
-                String bal = cursor.getString(balanceIndex);
-                contactList.add(new Contacts(name, phoneNumber, bal));
-            } while (cursor.moveToNext());
-
-            cursor.close();
-        }
-
-        return contactList;
     }
 
 

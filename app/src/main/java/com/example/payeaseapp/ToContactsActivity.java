@@ -18,6 +18,9 @@ public class ToContactsActivity extends AppCompatActivity {
 
     DBHandler dbHandler;
 
+    ListView cList;
+    private ContactAdapter contactAdapter;
+
     @Override
     @SuppressLint("MissingInflatedId")
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,18 +28,11 @@ public class ToContactsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_to_contacts);
 
         dbHandler = new DBHandler(this);
-        dbHandler.insertContactData();
 
-        ListView listView = findViewById(R.id.cList);
-        List<String> list = new ArrayList<>();
-        list.add("Megha");
-        list.add("Divya");
-        list.add("Nireeksha");
-        list.add("Jyothika");
-        list.add("Tanushree");
+        List<Contacts> contactList = fetchContactsFromDatabase();
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, list);
-        listView.setAdapter(arrayAdapter);
+        contactAdapter = new ContactAdapter(this, contactList);
+        cList.setAdapter(contactAdapter);
 
 
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
@@ -49,5 +45,10 @@ public class ToContactsActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    private List<Contacts> fetchContactsFromDatabase() {
+        List<Contacts> contactList = new ArrayList<>();
+        contactList = dbHandler.getContacts();
+        return contactList;
     }
 }

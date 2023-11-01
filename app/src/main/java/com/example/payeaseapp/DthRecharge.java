@@ -2,7 +2,12 @@ package com.example.payeaseapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,7 +19,9 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DthRecharge extends AppCompatActivity {
@@ -25,6 +32,8 @@ public class DthRecharge extends AppCompatActivity {
     EditText upiD;
     String operatorStr, upiPin;
     int packPrice;
+
+    DBHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +99,59 @@ public class DthRecharge extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 upiPin = upiD.getText().toString();
-                Toast.makeText(DthRecharge.this, "DTH Operator: " +operatorStr+ " DTH Pack: " +packPrice+ " UPI PIN: " +upiPin, Toast.LENGTH_SHORT).show();
+                SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+                String user_str = sharedPreferences.getString("username_key", "");
+
+                dbHandler = new DBHandler(DthRecharge.this);
+                SQLiteDatabase db = dbHandler.getReadableDatabase();
+
+                String[] columns = {"BALANCE"};
+                String selection = "BANK_ACC_NAME = ?";
+                String[] selectionArgs = {user_str};
+                Cursor cursor = db.query("payEaseBank", columns, selection, selectionArgs, null, null, null);
+
+                if (cursor.moveToFirst()) {
+                    int balance1index = cursor.getColumnIndex("BALANCE");
+
+                    if (balance1index >= 0) {
+                        double balance1 = Double.parseDouble(cursor.getString(balance1index));
+                        if (balance1 >= packPrice) {
+                            // Perform the transaction
+                            balance1 -= packPrice;
+                            ContentValues values1 = new ContentValues();
+                            values1.put("BALANCE", balance1);
+                            db.update("payEaseBank", values1, "BANK_ACC_NAME = ?", new String[]{user_str});
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            String formattedDate = dateFormat.format(new Date());
+                            ContentValues transactionValues = new ContentValues();
+                            transactionValues.put("userName", user_str);
+                            transactionValues.put("BALANCE", balance1);
+                            transactionValues.put("receiver", operatorStr);
+                            transactionValues.put("deduct", packPrice);
+                            transactionValues.put("timedate", formattedDate);
+                            db.insert("payEaseBTransaction", null, transactionValues);
+
+                            String bal1 = Double.toString(balance1);
+                            String packP = Double.toString(packPrice);
+
+                            Intent i1 = new Intent(DthRecharge.this, SuccessActivity.class);
+                            i1.putExtra("Username", operatorStr);
+                            i1.putExtra("AmountPaid", packP);
+                            i1.putExtra("UpdatedBalance", bal1);
+                            startActivity(i1);
+
+                            Toast.makeText(DthRecharge.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(DthRecharge.this, "Insufficient balance for the transaction", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(DthRecharge.this, "Invalid details", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Toast.makeText(DthRecharge.this, "No bank account found for the logged-in user", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -46,7 +46,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         user_str = sharedPreferences.getString(USERNAME_KEY, "");
         email_str = dbHandler.getEmail(this);
-        phone = sharedPreferences.getString(PHONE_KEY, "");
+        phone = dbHandler.getPhone(this);
 
         userText.setText("Username: "+user_str);
         emailText.setText("Email: " +email_str);
@@ -87,7 +87,12 @@ public class ProfilePageActivity extends AppCompatActivity {
                     startActivity(i1);
                 }
                 if(position == 1)
-                {}
+                {
+                    dbHandler.deleteUserByUsername(user_str);
+                    Intent i3 = new Intent(ProfilePageActivity.this, MainActivity.class);
+                    finish();
+                    startActivity(i3);
+                }
                 if(position == 2)
                 {
                     Intent i2 = new Intent(ProfilePageActivity.this, MainActivity.class);

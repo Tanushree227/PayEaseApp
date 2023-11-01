@@ -16,6 +16,9 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ToBankActivity extends AppCompatActivity {
 
     private ImageButton backButton;
@@ -105,6 +108,17 @@ public class ToBankActivity extends AppCompatActivity {
                             values2.put("BALANCE", balance2);
                             db.update("payEaseBank", values2, "BANK_ACC_NO = ? AND IFSC_CODE = ?", new String[] {accNumber, ifscCode});
 
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            String formattedDate = dateFormat.format(new Date());
+                            ContentValues transactionValues = new ContentValues();
+                            transactionValues.put("userName", user_str);
+                            transactionValues.put("BALANCE", balance1);
+                            transactionValues.put("receiver", accHolderName);
+                            transactionValues.put("deduct", amount);
+                            transactionValues.put("timedate", formattedDate);
+                            db.insert("payEaseBTransaction", null, transactionValues);
+
+
                             // Log the transaction
                             logTransaction(user_str, balance1, accNumber, transactionAmount);
                             String bal1 = Double.toString(balance1);
@@ -115,7 +129,7 @@ public class ToBankActivity extends AppCompatActivity {
                             i1.putExtra("UpdatedBalance", bal1);
                             startActivity(i1);
 
-                            Toast.makeText(this, "Transaction successful." + balance1, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Transaction successful.", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(this, "Insufficient balance for the transaction", Toast.LENGTH_SHORT).show();
                         }

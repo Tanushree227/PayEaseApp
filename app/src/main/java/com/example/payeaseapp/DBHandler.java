@@ -6,10 +6,14 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     public static final String SHARED_PREFS = "login_prefs";
@@ -34,10 +38,11 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String IFSC_CODE = "IFSC_CODE";
     private static final String BALANCE = "BALANCE";
     private static final String Deduct = "deduct";
+    private static final String DateTime = "timedate";
     private static final String USerID = "receiver";
     private static final String CONTACT_TABLE = "PayEaseContact";
     private static final String CONTACT_NAME = "ContactAccName";
-    private static final String CONTACT_BANK_ACC_NO = "ContactBankAccNO";
+    private static final String CONTACT_PHONE_ACC_NO = "ContactPhoneAccNO";
     private static final String CONTACT_BALANCE = "ContactBALANCE";
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -67,10 +72,10 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL(query1);
 
         String query2 = "CREATE TABLE " + CONTACT_TABLE + "("
-                + ID_COL + "INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + CONTACT_NAME + "TEXT, "
-                + CONTACT_BANK_ACC_NO + "TEXT UNIQUE, "
-                + CONTACT_BALANCE + "TEXT )";
+                + ID_COL + " INTEGER PRIMARY KEY, "
+                + CONTACT_NAME + " TEXT, "
+                + CONTACT_PHONE_ACC_NO + " TEXT UNIQUE, "
+                + CONTACT_BALANCE + " TEXT )";
         db.execSQL(query2);
 
         String walletTableQuery = "CREATE TABLE " + WALLET_TABLE + " ("
@@ -88,9 +93,36 @@ public class DBHandler extends SQLiteOpenHelper {
                 + BALANCE + " TEXT,"
                 + USerID + " TEXT,"
                 + Deduct + " TEXT, " +
+                 DateTime + " TEXT, " +
                 "FOREIGN KEY(" + USERNAME + ") REFERENCES " + TABLE_NAME + "(" + USERNAME + "), " +
                 "FOREIGN KEY(" + BALANCE + ") REFERENCES " + BANK_Table + "(" + BALANCE + "))";
         db.execSQL(query3);
+
+        ContentValues values = new ContentValues();
+        values.put(CONTACT_NAME ,"Megha");
+        values.put(CONTACT_PHONE_ACC_NO, "8765032149");
+        values.put(CONTACT_BALANCE, "4900");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Divya");
+        values.put(CONTACT_PHONE_ACC_NO, "8765032150");
+        values.put(CONTACT_BALANCE, "5000");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Nireeksha");
+        values.put(CONTACT_PHONE_ACC_NO, "8765032151");
+        values.put(CONTACT_BALANCE, "5100");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Tanushree");
+        values.put(CONTACT_PHONE_ACC_NO, "8765032177");
+        values.put(CONTACT_BALANCE, "7700");
+        db.insert(CONTACT_TABLE, null, values);
+
+        values.put(CONTACT_NAME ,"Jyothika");
+        values.put(CONTACT_PHONE_ACC_NO, "8765032183");
+        values.put(CONTACT_BALANCE, "8300");
+        db.insert(CONTACT_TABLE, null, values);
 
     }
     public boolean isUserValid(String username, String password) {
@@ -177,35 +209,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.insert(BANK_Table, null, values);
     }
 
-    public void insertContactData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(CONTACT_NAME ,"Megha");
-        values.put(CONTACT_BANK_ACC_NO, "498765032149");
-        values.put(CONTACT_BALANCE, "4900");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Divya");
-        values.put(CONTACT_BANK_ACC_NO, "508765032150");
-        values.put(CONTACT_BALANCE, "5000");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Nireeksha");
-        values.put(CONTACT_BANK_ACC_NO, "518765032151");
-        values.put(CONTACT_BALANCE, "5100");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Tanushree");
-        values.put(CONTACT_BANK_ACC_NO, "778765032177");
-        values.put(CONTACT_BALANCE, "7700");
-        db.insert(CONTACT_TABLE, null, values);
-
-        values.put(CONTACT_NAME ,"Jyothika");
-        values.put(CONTACT_BANK_ACC_NO, "838765032183");
-        values.put(CONTACT_BALANCE, "8300");
-        db.insert(CONTACT_TABLE, null, values);
-    }
-
     public String checkTransaction(String loggedInUsername, String Damt, String userIdName) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
@@ -244,6 +247,8 @@ public class DBHandler extends SQLiteOpenHelper {
                         ContentValues values2 = new ContentValues();
                         values2.put(BALANCE, balance2);
                         db.update(BANK_Table, values2, BANK_ACC_NAME + " = ?", new String[]{userIdName});
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String formattedDate = dateFormat.format(new Date()); // Get the current date and time
 
                         // Insert a record into the transaction table
                         ContentValues transactionValues = new ContentValues();
@@ -251,6 +256,7 @@ public class DBHandler extends SQLiteOpenHelper {
                         transactionValues.put(BALANCE, balance1);
                         transactionValues.put(USerID, userIdName);
                         transactionValues.put(Deduct, Damt);
+                        transactionValues.put(DateTime, formattedDate);
                         db.insert(Transaction_Table, null, transactionValues);
 
                         cursor2.close();
@@ -298,28 +304,40 @@ public class DBHandler extends SQLiteOpenHelper {
         return userDetails;
     }
 
-    public ArrayList<String> getTransactionHistory(Context context) {
+    public ArrayList<TransactionClass> getTransactionHistory(Context context) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         String username = sharedPreferences.getString(USERNAME_KEY, "");
 
-        String query = "SELECT " +  USerID + ", " + Deduct +
+        String query = "SELECT " + USerID + ", " + Deduct + ", " + DateTime +
                 " FROM " + Transaction_Table +
-                " WHERE " + USERNAME + " = ?";
+                " WHERE " + USERNAME + " = ?" +
+                " OR " + USerID + " = ?" +
+                " ORDER BY " + DateTime + " DESC ";
         Cursor cursor = db.rawQuery(query, new String[]{username});
 
-        ArrayList<String> transactionDetails = new ArrayList<>();
+        ArrayList<TransactionClass> transactionDetails = new ArrayList<>();
 
         if (cursor != null && cursor.moveToFirst()) {
-            transactionDetails.add(cursor.getString(0));
-            transactionDetails.add(cursor.getString(1));
+            do {
+                TransactionClass transactionClass = new TransactionClass();
+                String userID = cursor.getString(0);
+                String deduct = cursor.getString(1);
+                String date1 = cursor.getString(2);
+                transactionClass.setReceiverId(userID);
+                transactionClass.setSenderId(username);
+                transactionClass.setAmount(deduct);
+                transactionClass.setDate(date1);
+                transactionDetails.add(transactionClass);
+            } while (cursor.moveToNext());
 
             cursor.close();
         }
 
         return transactionDetails;
     }
+
 
     public String getEmail(Context context)
     {
@@ -334,6 +352,23 @@ public class DBHandler extends SQLiteOpenHelper {
             String email = (cursor.getString(0));
             cursor.close();
             return  email;
+        }
+        return "";
+    }
+
+    public String getPhone(Context context)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        String query = "SELECT " + PHONE + " FROM " + TABLE_NAME + " WHERE " + USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String phone = (cursor.getString(0));
+            cursor.close();
+            return  phone;
         }
         return "";
     }
@@ -370,6 +405,35 @@ public class DBHandler extends SQLiteOpenHelper {
         String[] whereArgs2 = {olduser};
         db.update(BANK_Table, values2, whereCLause2, whereArgs2);
     }
+
+    public void deleteUserByUsername(String username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, USERNAME + "=?", new String[]{username});
+    }
+
+    public List<Contacts> getContacts() {
+        List<Contacts> contactList = new ArrayList<>();
+        SQLiteDatabase db = null;
+        db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT "+ CONTACT_NAME+ ", " +CONTACT_PHONE_ACC_NO+" FROM " + CONTACT_TABLE, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(CONTACT_NAME);
+            int phoneIndex = cursor.getColumnIndex(CONTACT_PHONE_ACC_NO);
+            int balanceIndex = cursor.getColumnIndex(CONTACT_BALANCE);
+            do {
+                String name = cursor.getString(nameIndex);
+                String phoneNumber = cursor.getString(phoneIndex);
+                String bal = cursor.getString(balanceIndex);
+                contactList.add(new Contacts(name, phoneNumber, bal));
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+
+        return contactList;
+    }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

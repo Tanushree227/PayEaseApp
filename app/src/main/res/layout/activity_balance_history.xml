@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#030450"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Balance_History_Activity">
+    android:layout_height="match_parent">
 
     <ImageButton
         android:id="@+id/backbalancebtn"
@@ -58,29 +59,10 @@
         android:gravity="center"
         android:layout_margin="20dp"/>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/transactionCard"
+    <ListView
+        android:id="@+id/TranList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
-        android:layout_below="@id/TransactioHistoryText">
-
-        <TextView
-            android:id="@+id/receiverT"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:layout_marginStart="40dp"/>
-        <TextView
-            android:id="@+id/deductA"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="40dp"/>
-
-
-    </androidx.cardview.widget.CardView>
-
+        android:layout_height="match_parent"
+        android:layout_below="@id/TransactioHistoryText"
+        android:padding="10dp"/>
 </RelativeLayout>

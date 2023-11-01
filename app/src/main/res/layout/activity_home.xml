@@ -113,18 +113,11 @@
         android:layout_height="wrap_content">
 
         <ImageButton
-            android:id="@+id/digitalwallet"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:background="@drawable/transaction_logo"
-            android:layout_marginStart="30dp"/>
-
-        <ImageButton
             android:id="@+id/balance"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:background="@drawable/payment_logo"
-            android:layout_marginStart="50dp"/>
+            android:layout_marginStart="30dp"/>
 
     </LinearLayout>
 
@@ -136,21 +129,11 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/digitaltext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="40dp"
-            android:text="Digital \n Wallet"
-            android:textColor="#030450"
-            android:textSize="18dp"/>
-
-        <TextView
             android:id="@+id/balancetext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="30dp"
             android:text="Balance &amp;\n History"
             android:textAlignment="center"
             android:textColor="#030450"

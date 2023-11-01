@@ -3,7 +3,12 @@ package com.example.payeaseapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +20,9 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MobileRechargeActivity extends AppCompatActivity {
@@ -26,6 +33,8 @@ public class MobileRechargeActivity extends AppCompatActivity {
     EditText upiM;
     String operatorStr, upiPin;
     int packPrice;
+
+    DBHandler dbHandler;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -92,8 +101,69 @@ public class MobileRechargeActivity extends AppCompatActivity {
         paybtnM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dbHandler = new DBHandler(MobileRechargeActivity.this);
                 upiPin = upiM.getText().toString();
-                Toast.makeText(MobileRechargeActivity.this, "Mobile Operator: " +operatorStr+ " Recharge Pack: " +packPrice+ " UPI PIN: " +upiPin, Toast.LENGTH_SHORT).show();
+                String upi = dbHandler.getUpiPin(MobileRechargeActivity.this);
+
+                if(upiPin.equals(upi)) {
+                    SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+                    String user_str = sharedPreferences.getString("username_key", "");
+
+                    dbHandler = new DBHandler(MobileRechargeActivity.this);
+                    SQLiteDatabase db = dbHandler.getReadableDatabase();
+
+                    String[] columns = {"BALANCE"};
+                    String selection = "BANK_ACC_NAME = ?";
+                    String[] selectionArgs = {user_str};
+                    Cursor cursor = db.query("payEaseBank", columns, selection, selectionArgs, null, null, null);
+
+                    if (cursor.moveToFirst()) {
+                        int balance1index = cursor.getColumnIndex("BALANCE");
+
+                        if (balance1index >= 0) {
+                            double balance1 = Double.parseDouble(cursor.getString(balance1index));
+                            if (balance1 >= packPrice) {
+                                // Perform the transaction
+                                balance1 -= packPrice;
+                                ContentValues values1 = new ContentValues();
+                                values1.put("BALANCE", balance1);
+                                db.update("payEaseBank", values1, "BANK_ACC_NAME = ?", new String[]{user_str});
+
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                String formattedDate = dateFormat.format(new Date());
+                                ContentValues transactionValues = new ContentValues();
+                                transactionValues.put("userName", user_str);
+                                transactionValues.put("BALANCE", balance1);
+                                transactionValues.put("receiver", operatorStr);
+                                transactionValues.put("deduct", packPrice);
+                                transactionValues.put("timedate", formattedDate);
+                                db.insert("payEaseBTransaction", null, transactionValues);
+
+                                String bal1 = Double.toString(balance1);
+                                String packP = Double.toString(packPrice);
+
+                                Intent i1 = new Intent(MobileRechargeActivity.this, SuccessActivity.class);
+                                i1.putExtra("Username", operatorStr);
+                                i1.putExtra("AmountPaid", packP);
+                                i1.putExtra("UpdatedBalance", bal1);
+                                startActivity(i1);
+
+                                Toast.makeText(MobileRechargeActivity.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MobileRechargeActivity.this, "Insufficient balance for the transaction", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(MobileRechargeActivity.this, "Invalid details", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(MobileRechargeActivity.this, "No bank account found for the logged-in user", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(MobileRechargeActivity.this, "Wrong UPI Pin is entered.", Toast.LENGTH_SHORT).show();
+                    upiM.setText("");
+                }
             }
         });
 

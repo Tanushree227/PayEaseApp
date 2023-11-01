@@ -80,60 +80,67 @@ public class ElectricityRecharge extends AppCompatActivity {
         sendbtnE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dbHandler = new DBHandler(ElectricityRecharge.this);
                 amount = amtSendE.getText().toString();
                 upiPin = upi2E.getText().toString();
-                SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
-                String user_str = sharedPreferences.getString("username_key", "");
+                String upi = dbHandler.getUpiPin(ElectricityRecharge.this);
 
-                dbHandler = new DBHandler(ElectricityRecharge.this);
-                SQLiteDatabase db = dbHandler.getReadableDatabase();
+                if(upiPin.equals(upi)) {
+                    SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+                    String user_str = sharedPreferences.getString("username_key", "");
+                    SQLiteDatabase db = dbHandler.getReadableDatabase();
 
-                String[] columns = {"BALANCE"};
-                String selection = "BANK_ACC_NAME = ?";
-                String[] selectionArgs = {user_str};
-                Cursor cursor = db.query("payEaseBank", columns, selection, selectionArgs, null, null, null);
+                    String[] columns = {"BALANCE"};
+                    String selection = "BANK_ACC_NAME = ?";
+                    String[] selectionArgs = {user_str};
+                    Cursor cursor = db.query("payEaseBank", columns, selection, selectionArgs, null, null, null);
 
-                if (cursor.moveToFirst()) {
-                    int balance1index = cursor.getColumnIndex("BALANCE");
+                    if (cursor.moveToFirst()) {
+                        int balance1index = cursor.getColumnIndex("BALANCE");
 
-                    if (balance1index >= 0) {
-                        double balance1 = Double.parseDouble(cursor.getString(balance1index));
-                        double transactionAmount = Double.parseDouble(amount);
-                        if (balance1 >= transactionAmount) {
-                            // Perform the transaction
-                            balance1 -= transactionAmount;
-                            ContentValues values1 = new ContentValues();
-                            values1.put("BALANCE", balance1);
-                            db.update("payEaseBank", values1, "BANK_ACC_NAME = ?", new String[]{user_str});
+                        if (balance1index >= 0) {
+                            double balance1 = Double.parseDouble(cursor.getString(balance1index));
+                            double transactionAmount = Double.parseDouble(amount);
+                            if (balance1 >= transactionAmount) {
+                                // Perform the transaction
+                                balance1 -= transactionAmount;
+                                ContentValues values1 = new ContentValues();
+                                values1.put("BALANCE", balance1);
+                                db.update("payEaseBank", values1, "BANK_ACC_NAME = ?", new String[]{user_str});
 
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            String formattedDate = dateFormat.format(new Date());
-                            ContentValues transactionValues = new ContentValues();
-                            transactionValues.put("userName", user_str);
-                            transactionValues.put("BALANCE", balance1);
-                            transactionValues.put("receiver", electricityBoardStr);
-                            transactionValues.put("deduct", amount);
-                            transactionValues.put("timedate", formattedDate);
-                            db.insert("payEaseBTransaction", null, transactionValues);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                String formattedDate = dateFormat.format(new Date());
+                                ContentValues transactionValues = new ContentValues();
+                                transactionValues.put("userName", user_str);
+                                transactionValues.put("BALANCE", balance1);
+                                transactionValues.put("receiver", electricityBoardStr);
+                                transactionValues.put("deduct", amount);
+                                transactionValues.put("timedate", formattedDate);
+                                db.insert("payEaseBTransaction", null, transactionValues);
 
-                            String bal1 = Double.toString(balance1);
+                                String bal1 = Double.toString(balance1);
 
-                            Intent i1 = new Intent(ElectricityRecharge.this, SuccessActivity.class);
-                            i1.putExtra("Username", electricityBoardStr);
-                            i1.putExtra("AmountPaid", amount);
-                            i1.putExtra("UpdatedBalance", bal1);
-                            startActivity(i1);
+                                Intent i1 = new Intent(ElectricityRecharge.this, SuccessActivity.class);
+                                i1.putExtra("Username", electricityBoardStr);
+                                i1.putExtra("AmountPaid", amount);
+                                i1.putExtra("UpdatedBalance", bal1);
+                                startActivity(i1);
 
-                            Toast.makeText(ElectricityRecharge.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ElectricityRecharge.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ElectricityRecharge.this, "Insufficient balance for the transaction", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            Toast.makeText(ElectricityRecharge.this, "Insufficient balance for the transaction", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ElectricityRecharge.this, "Invalid details", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(ElectricityRecharge.this, "Invalid details", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ElectricityRecharge.this, "No bank account found for the logged-in user", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else {
-                    Toast.makeText(ElectricityRecharge.this, "No bank account found for the logged-in user", Toast.LENGTH_SHORT).show();
+                else
+                {
+                    Toast.makeText(ElectricityRecharge.this, "Wrong UPI Pin is entered.", Toast.LENGTH_SHORT).show();
+                    upi2E.setText("");
                 }
             }
         });

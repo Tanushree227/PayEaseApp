@@ -20,12 +20,11 @@ public class ToPhoneActivity extends AppCompatActivity {
     private EditText phoneNumberEditText, amtSend, upi2;
     private Button sendButton;
     public static final String SHARED_PREFS = "login_prefs";
-    public static final String UPI_KEY = "upi_key";
-    public static final String SHARED_PREFS_BANk = "bank_prefs";
     public static final String USERNAME_KEY = "username_key";
     SharedPreferences sharedPreferences;
     String user_str;
 
+    DBHandler dbHandler;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,52 +57,60 @@ public class ToPhoneActivity extends AppCompatActivity {
     }
 
     public void onGetUsernameClick(View view) {
+        dbHandler = new DBHandler(ToPhoneActivity.this);
         String phoneNumber = phoneNumberEditText.getText().toString();
         String amountToSend = amtSend.getText().toString();
         String upiPin = upi2.getText().toString();
+        String upi = dbHandler.getUpiPin(ToPhoneActivity.this);
 
-        if (!phoneNumber.isEmpty() && !amountToSend.isEmpty() && !upiPin.isEmpty()) {
-            DBHandler dbHelper = new DBHandler(this);
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
+        if(upiPin.equals(upi)) {
+            if (!phoneNumber.isEmpty() && !amountToSend.isEmpty() && !upiPin.isEmpty()) {
+                DBHandler dbHelper = new DBHandler(this);
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-            String[] columns = { "userName" };
+                String[] columns = {"userName"};
 
-            String selection = "phone = ?";
-            String[] selectionArgs = { phoneNumber };
+                String selection = "phone = ?";
+                String[] selectionArgs = {phoneNumber};
 
-            Cursor cursor = db.query("payEaseSignUp", columns, selection, selectionArgs, null, null, null);
-            int usernameIndex = cursor.getColumnIndex("userName");
-            if (cursor != null && cursor.moveToFirst()) {
-                String username = cursor.getString(usernameIndex);
-                String result = dbHelper.checkTransaction(user_str, amountToSend, username);
+                Cursor cursor = db.query("payEaseSignUp", columns, selection, selectionArgs, null, null, null);
+                int usernameIndex = cursor.getColumnIndex("userName");
+                if (cursor != null && cursor.moveToFirst()) {
+                    String username = cursor.getString(usernameIndex);
+                    String result = dbHelper.checkTransaction(user_str, amountToSend, username);
 
-                if (result == null) {
-                    // Transaction failed (e.g., insufficient balance)
+                    if (result == null) {
+                        // Transaction failed (e.g., insufficient balance)
+                        Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
+                        i2.putExtra("AmountPaid", amountToSend);
+                        i2.putExtra("Result", "Insufficient Balance");
+                        startActivity(i2);
+                    } else {
+                        // Transaction successful
+                        Intent i1 = new Intent(ToPhoneActivity.this, SuccessActivity.class);
+                        i1.putExtra("Username", username);
+                        i1.putExtra("AmountPaid", amountToSend);
+                        i1.putExtra("UpdatedBalance", result);
+                        startActivity(i1);
+                    }
+
+                    cursor.close();
+                } else {
                     Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
                     i2.putExtra("AmountPaid", amountToSend);
-                    i2.putExtra("Result", "Insufficient Balance");
+                    i2.putExtra("Result", phoneNumber);
                     startActivity(i2);
-                } else {
-                    // Transaction successful
-                    Intent i1 = new Intent(ToPhoneActivity.this, SuccessActivity.class);
-                    i1.putExtra("Username", username);
-                    i1.putExtra("AmountPaid", amountToSend);
-                    i1.putExtra("UpdatedBalance", result);
-                    startActivity(i1);
                 }
 
-                cursor.close();
+                db.close();
+            } else {
+                Toast.makeText(this, "Please enter a phone number and amount to send.", Toast.LENGTH_SHORT).show();
             }
-            else {
-                Intent i2 = new Intent(ToPhoneActivity.this, FailureActivity.class);
-                i2.putExtra("AmountPaid", amountToSend);
-                i2.putExtra("Result", phoneNumber);
-                startActivity(i2);
-            }
-
-            db.close();
-        } else {
-            Toast.makeText(this, "Please enter a phone number and amount to send.", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(ToPhoneActivity.this, "Wrong UPI Pin is entered.", Toast.LENGTH_SHORT).show();
+            upi2.setText("");
         }
     }
 

@@ -25,7 +25,7 @@ public class HomeActivity extends AppCompatActivity {
         ImageView to_contact = (ImageView) findViewById(R.id.tocontact);
         ImageView to_bank = (ImageView) findViewById(R.id.tobank);
         ImageButton menu = (ImageButton) findViewById(R.id.menu);
-        ImageView digitalwallet = (ImageButton) findViewById(R.id.digitalwallet);
+        //ImageView digitalwallet = (ImageButton) findViewById(R.id.digitalwallet);
         ImageView balance_history = (ImageView) findViewById(R.id.balance);
         ImageView electricityRbtn = (ImageView) findViewById(R.id.electricityRbtn);
         ImageView dthRbtn = (ImageView) findViewById(R.id.dthRbtn);
@@ -64,13 +64,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        digitalwallet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i4 = new Intent(HomeActivity.this, DigitalWalletActivity.class);
-                startActivity(i4);
-            }
-        });
+//        digitalwallet.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent i4 = new Intent(HomeActivity.this, DigitalWalletActivity.class);
+//                startActivity(i4);
+//            }
+//        });
 
         balance_history.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -373,6 +373,23 @@ public class DBHandler extends SQLiteOpenHelper {
         return "";
     }
 
+    public String getUpiPin(Context context)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(USERNAME_KEY, "");
+
+        String query = "SELECT " + UPI_PIN + " FROM " + BANK_Table + " WHERE " + BANK_ACC_NAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String phone = (cursor.getString(0));
+            cursor.close();
+            return  phone;
+        }
+        return "";
+    }
+
     public String getBalance(Context context)
     {
         SQLiteDatabase db = this.getReadableDatabase();

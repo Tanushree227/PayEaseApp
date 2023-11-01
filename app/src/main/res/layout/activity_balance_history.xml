@@ -59,10 +59,10 @@
         android:gravity="center"
         android:layout_margin="20dp"/>
 
-    <ListView
-        android:id="@+id/TranList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/TransactioHistoryText"
-        android:padding="10dp"/>
+        <ListView
+            android:id="@+id/TranList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/TransactioHistoryText"
+            android:padding="10dp"/>
 </RelativeLayout>

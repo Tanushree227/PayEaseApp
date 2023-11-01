@@ -43,18 +43,7 @@
             android:id="@+id/acc_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Bank Account Number"
-            android:textColorHint="@color/white"
-            android:textColor="@color/white"
-            android:layout_margin="10dp"
-            android:padding="20dp"
-            android:background="#30ffffff" />
-
-        <EditText
-            android:id="@+id/retypr_acc_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Re-Type Bank Account Number"
+            android:hint="Enter Receiver's Bank Account Number"
             android:textColorHint="@color/white"
             android:textColor="@color/white"
             android:layout_margin="10dp"
@@ -65,7 +54,7 @@
             android:id="@+id/ifsc_code"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter IFSC Code"
+            android:hint="Enter Receiver's IFSC Code"
             android:textColorHint="@color/white"
             android:textColor="@color/white"
             android:layout_margin="10dp"
@@ -87,12 +76,24 @@
             android:id="@+id/amount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Amount"
+            android:hint="Enter Amount to send"
             android:textColorHint="@color/white"
             android:textColor="@color/white"
             android:layout_margin="10dp"
             android:padding="20dp"
             android:background="#30ffffff" />
+
+        <EditText
+            android:id="@+id/upiB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your UPI Pin"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:layout_margin="10dp"
+            android:padding="20dp"
+            android:background="#30ffffff" />
+
 
         <Button
             android:id="@+id/confrmbtn"

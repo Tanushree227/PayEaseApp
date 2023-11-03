@@ -109,7 +109,6 @@ public class MobileRechargeActivity extends AppCompatActivity {
                     SharedPreferences sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
                     String user_str = sharedPreferences.getString("username_key", "");
 
-                    dbHandler = new DBHandler(MobileRechargeActivity.this);
                     SQLiteDatabase db = dbHandler.getReadableDatabase();
 
                     String[] columns = {"BALANCE"};

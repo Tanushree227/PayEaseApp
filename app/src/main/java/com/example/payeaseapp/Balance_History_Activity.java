@@ -74,14 +74,17 @@ public class Balance_History_Activity extends AppCompatActivity{
                 String selection = "BANK_ACC_NAME = ?";
                 String[] selectionArgs = {user_str};
                 Cursor cursor = db.query("payEaseBank", columns, selection, selectionArgs, null, null, null);
-                int balance1index = cursor.getColumnIndex("BALANCE");
-                double balance1 = Double.parseDouble(cursor.getString(balance1index));
-                balance1 += addBal1;
-                ContentValues values1 = new ContentValues();
-                values1.put("BALANCE", balance1);
-                db.update("payEaseBank", values1, "BANK_ACC_NAME = ?", new String[]{user_str});
-                String bal1 = Double.toString(balance1);
-                balance.setText("Rs. " +bal1+ "/-");
+                if(cursor.moveToFirst()) {
+                    int balance1index = cursor.getColumnIndex("BALANCE");
+                    double balance1 = Double.parseDouble(cursor.getString(balance1index));
+                    balance1 += addBal1;
+                    ContentValues values1 = new ContentValues();
+                    values1.put("BALANCE", balance1);
+                    db.update("payEaseBank", values1, "BANK_ACC_NAME = ?", new String[]{user_str});
+                    String bal1 = Double.toString(balance1);
+                    balance.setText("Rs. " + bal1 + "/-");
+                }
+                addBalance.setText("");
             }
         });
     }

@@ -3,7 +3,9 @@ package com.example.payeaseapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -77,6 +79,8 @@ public class ProfilePageActivity extends AppCompatActivity {
         ArrayAdapter arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, list);
         listView.setAdapter(arrayAdapter);
 
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -88,16 +92,50 @@ public class ProfilePageActivity extends AppCompatActivity {
                 }
                 if(position == 1)
                 {
-                    dbHandler.deleteUserByUsername(user_str);
-                    Intent i3 = new Intent(ProfilePageActivity.this, MainActivity.class);
-                    finish();
-                    startActivity(i3);
+                    builder1.setMessage("Are you sure you want to Delete Account?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                    dbHandler.deleteUserByUsername(user_str);
+                                    Intent i3 = new Intent(ProfilePageActivity.this, MainActivity.class);
+                                    finish();
+                                    startActivity(i3);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                    AlertDialog alertDialog = builder1.create();
+                    alertDialog.setTitle("PayEase");
+                    alertDialog.show();
                 }
                 if(position == 2)
                 {
-                    Intent i2 = new Intent(ProfilePageActivity.this, MainActivity.class);
-                    finish();
-                    startActivity(i2);
+                    builder1.setMessage("Log out of " +user_str+ " ?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                    Intent i2 = new Intent(ProfilePageActivity.this, MainActivity.class);
+                                    finish();
+                                    startActivity(i2);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                    AlertDialog alertDialog = builder1.create();
+                    alertDialog.setTitle("PayEase");
+                    alertDialog.show();
                 }
             }
         });

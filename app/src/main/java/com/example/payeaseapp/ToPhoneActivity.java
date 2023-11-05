@@ -1,9 +1,13 @@
 package com.example.payeaseapp;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +16,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -63,6 +71,16 @@ public class ToPhoneActivity extends AppCompatActivity {
         String upiPin = upi2.getText().toString();
         String upi = dbHandler.getUpiPin(ToPhoneActivity.this);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "PayEaseApp";
+            String desc = "Payment App";
+            int imp = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("n001", name, imp);
+            channel.setDescription(desc);
+            NotificationManager nManager = getSystemService(NotificationManager.class);
+            nManager.createNotificationChannel(channel);
+        }
+
         if(upiPin.equals(upi)) {
             if (!phoneNumber.isEmpty() && !amountToSend.isEmpty() && !upiPin.isEmpty()) {
                 DBHandler dbHelper = new DBHandler(this);
@@ -93,6 +111,26 @@ public class ToPhoneActivity extends AppCompatActivity {
                         i1.putExtra("UpdatedBalance", result);
                         startActivity(i1);
                     }
+
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(ToPhoneActivity.this, "n001")
+                            .setSmallIcon(R.drawable.payease_splashscreen)
+                            .setContentTitle("Phone Payment Done")
+                            .setContentText("Payment done successfully to " +username)
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+                    NotificationManagerCompat nManager = NotificationManagerCompat.from(ToPhoneActivity.this);
+                    if (ActivityCompat.checkSelfPermission(ToPhoneActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    nManager.notify(1, builder.build());
 
                     cursor.close();
                 } else {

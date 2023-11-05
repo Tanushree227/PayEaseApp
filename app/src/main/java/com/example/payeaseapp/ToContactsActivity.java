@@ -1,14 +1,21 @@
 package com.example.payeaseapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -67,6 +74,16 @@ public class ToContactsActivity extends AppCompatActivity {
             }
         });
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "PayEaseApp";
+            String desc = "Payment App";
+            int imp = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("n001", name, imp);
+            channel.setDescription(desc);
+            NotificationManager nManager = getSystemService(NotificationManager.class);
+            nManager.createNotificationChannel(channel);
+        }
+
         sendbtnC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +133,25 @@ public class ToContactsActivity extends AppCompatActivity {
                                 i1.putExtra("UpdatedBalance", bal1);
                                 startActivity(i1);
 
-                                Toast.makeText(ToContactsActivity.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
+                                NotificationCompat.Builder builder = new NotificationCompat.Builder(ToContactsActivity.this, "n001")
+                                        .setSmallIcon(R.drawable.payease_splashscreen)
+                                        .setContentTitle("Contact Payment Done")
+                                        .setContentText("Payment done successfully to " +contactStr)
+                                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                        .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+                                NotificationManagerCompat nManager = NotificationManagerCompat.from(ToContactsActivity.this);
+                                if (ActivityCompat.checkSelfPermission(ToContactsActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    ActivityCompat#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for ActivityCompat#requestPermissions for more details.
+                                    return;
+                                }
+                                nManager.notify(1, builder.build());
                             } else {
                                 Toast.makeText(ToContactsActivity.this, "Insufficient balance for the transaction", Toast.LENGTH_SHORT).show();
                             }

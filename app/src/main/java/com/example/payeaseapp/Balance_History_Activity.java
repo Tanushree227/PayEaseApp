@@ -18,6 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -50,13 +51,29 @@ public class Balance_History_Activity extends AppCompatActivity{
         String bal_str = dbHandler.getBalance(this);
         balance.setText("Rs. " +bal_str+ "/-");
 
-        ArrayList<TransactionClass> transactionHistory = dbHandler.getTransactionHistory(this);
-
         transactionListView = findViewById(R.id.TranList);
 
         ArrayList<TransactionClass> transactionList = dbHandler.getTransactionHistory(this);
         transactionAdapter = new TransactionAdapter(this, transactionList,dbHandler);
         transactionListView.setAdapter(transactionAdapter);
+
+        transactionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TransactionClass selectedTransaction = transactionAdapter.getItem(position);
+                String sender = selectedTransaction.getSenderId();
+                String receiver = selectedTransaction.getReceiverId();
+                String amt = selectedTransaction.getAmount();
+                String datetime = selectedTransaction.getDate();
+
+                Intent i1 = new Intent(Balance_History_Activity.this, ReceiptActivity.class);
+                i1.putExtra("From", sender);
+                i1.putExtra("To", receiver);
+                i1.putExtra("Amount", amt);
+                i1.putExtra("Date", datetime);
+                startActivity(i1);
+            }
+        });
 
         ImageButton backbalancebtn = (ImageButton) findViewById(R.id.backbalancebtn);
         backbalancebtn.setOnClickListener(new View.OnClickListener() {

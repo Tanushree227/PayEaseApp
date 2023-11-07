@@ -196,8 +196,6 @@ public class DBHandler extends SQLiteOpenHelper {
                         db.update(BANK_Table, values2, BANK_ACC_NAME + " = ?", new String[]{userIdName});
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String formattedDate = dateFormat.format(new Date()); // Get the current date and time
-
-                        // Insert a record into the transaction table
                         ContentValues transactionValues = new ContentValues();
                         transactionValues.put(USERNAME, loggedInUsername);
                         transactionValues.put(BALANCE, balance1);
@@ -221,7 +219,7 @@ public class DBHandler extends SQLiteOpenHelper {
             db.endTransaction();
         }
 
-        db.close();
+        //db.close();
         return loggedInUsername;
     }
 

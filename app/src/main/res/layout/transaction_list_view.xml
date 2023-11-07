@@ -21,21 +21,18 @@
                 android:id="@+id/senderTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sender: John Doe"
                 android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/receiverTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Receiver: Jane Smith"
                 android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/dateTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Date: 2023-10-29"
                 android:textColor="@color/white"/>
 
         </LinearLayout>
@@ -45,8 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textSize="17dp"
-            android:text="100"
+            android:textSize="17sp"
             android:textStyle="bold"
             android:textColor="@color/white"/>
 

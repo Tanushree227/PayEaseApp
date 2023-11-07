@@ -75,7 +75,7 @@
         android:backgroundTint="#f1faee"
         android:text="Add Money"
         android:textColor="#030450"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/TransactioHistoryText"

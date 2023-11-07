@@ -28,8 +28,8 @@
     <ImageView
         android:id="@+id/successTick"
         android:layout_below="@id/backSuccess"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_margin="20dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/success"/>
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/sender"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:textColor="@color/white"
         android:textSize="20dp"
         android:textStyle="bold"/>
@@ -85,11 +85,9 @@
         android:layout_margin="20dp"
         android:layout_below="@id/updatedBal"
         android:text="Done"
-        android:textStyle="bold"
         android:textSize="20dp"
         android:textColor="#030450"
         android:backgroundTint="@color/white"
         android:layout_centerHorizontal="true"/>
-
 
 </RelativeLayout>

@@ -20,7 +20,6 @@ public class AddBankActivity extends AppCompatActivity {
     public static final String BANK_NAME = "bank_name_key";
     public static final String IFSC_CODE = "ifsc_key";
     public static final String BALANCE_KEY = "balance_key";
-    public static final String UPI_KEY = "upi_key";
 
     SharedPreferences sharedPreferences;
 
@@ -73,8 +72,6 @@ public class AddBankActivity extends AppCompatActivity {
                     sharedPreferences.edit().putString(IFSC_CODE, ifscCode1).apply();
                     sharedPreferences.edit().putString(BALANCE_KEY, balance1).apply();
 
-                    saveMessage(bankAccNum, bankName1, ifscCode1, balance1, upiPin1);
-
                     Intent intent = new Intent(AddBankActivity.this, HomeActivity.class);
                     finish();
                     startActivity(intent);
@@ -89,15 +86,5 @@ public class AddBankActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-    }
-    private void saveMessage(String acc_num, String bank_name, String ifsc, String bal, String upi)
-    {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(BANK_ACC_NUM_KEY, acc_num);
-        editor.putString(BANK_NAME, bank_name);
-        editor.putString(IFSC_CODE, ifsc);
-        editor.putString(BALANCE_KEY, bal);
-        editor.putString(UPI_KEY, upi);
-        editor.apply();
     }
 }

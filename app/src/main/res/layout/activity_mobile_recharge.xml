@@ -41,7 +41,6 @@
         android:id="@+id/operatorM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_marginTop="120dp"
         android:padding="20dp"
         android:layout_centerHorizontal="true"/>
@@ -62,7 +61,6 @@
         android:id="@+id/packM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_below="@id/packTextM"
         android:layout_marginTop="20dp"
         android:padding="20dp"
